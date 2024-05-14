@@ -581,6 +581,9 @@ function Products() {
                                                                     <TableCell key="price" align="center">
                                                                         ${row.price}
                                                                     </TableCell>
+                                                                    <TableCell key="price" align="center">
+                                                                        {row.variations.reduce((total, item) => { return total += item.sold }, 0)}
+                                                                    </TableCell>
                                                                     <TableCell key="active" align="center">
                                                                         {row.active ? "Active" : "Disable"}
                                                                     </TableCell>

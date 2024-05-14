@@ -96,7 +96,7 @@ function Orders() {
     let orders = useSelector(state => state.order.data);
 
     let x = [...orders]
-    x = x.sort((a, b) => new Date(a.date) - new Date(b.date))
+    x = x.sort((a, b) => new Date(b.date) - new Date(a.date))
     orders = [...x]
 
     const [selectStatus, setSelectStatus] = useState("");
