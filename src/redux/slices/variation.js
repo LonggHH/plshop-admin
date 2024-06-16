@@ -9,7 +9,7 @@ export const getVariationByProductId = createAsyncThunk('variation/getByProductI
 const variationSlice = createSlice({
     name: 'variation',
     initialState: {
-        data: null,
+        data: [],
     },
     reducers: {
         saveVariation(state, action) {

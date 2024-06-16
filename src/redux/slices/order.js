@@ -9,7 +9,7 @@ export const getOrders = createAsyncThunk('order/getAll', async () => {
 const orderSlice = createSlice({
     name: 'order',
     initialState: {
-        data: null,
+        data: [],
     },
     reducers: {
         saveOrder(state, action) {

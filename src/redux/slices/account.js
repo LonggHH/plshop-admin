@@ -9,7 +9,7 @@ export const getAccounts = createAsyncThunk('account/getAll', async () => {
 const accountSlice = createSlice({
     name: 'account',
     initialState: {
-        data: null,
+        data: {},
     },
     reducers: {
         saveAccount(state, action) {

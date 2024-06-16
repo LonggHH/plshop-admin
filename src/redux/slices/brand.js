@@ -9,7 +9,7 @@ export const getBrands = createAsyncThunk('brand/getAll', async () => {
 const brandSlice = createSlice({
     name: 'brand',
     initialState: {
-        data: null,
+        data: [],
     },
     reducers: {
         saveBrand(state, action) {

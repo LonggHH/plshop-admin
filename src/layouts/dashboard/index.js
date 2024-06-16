@@ -1,18 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -45,6 +30,7 @@ import Paper from '@mui/material/Paper';
 function Dashboard() {
     const { sales, tasks } = reportsLineChartData;
 
+    const categories = useSelector(state => state.category.data);
     const brands = useSelector(state => state.brand.data);
     const products = useSelector(state => state.product.data);
     const orders = useSelector(state => state.order.data);
@@ -53,6 +39,23 @@ function Dashboard() {
     const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
     const [startYear, setStartYear] = useState(2023);
     const [selectYear, setSelectYear] = useState(currentYear);
+
+    const [selectCategory, setSelectCategory] = useState(0); // thong tin category muon thong ke
+    const [selectBrand, setSelectBrand] = useState(0); // thong tin brand muon thong ke
+
+    let arrayBrandBySelectCategory = brands.filter(item => {
+        if (selectCategory === 0) {
+            return true
+        } else if (item.category.id === selectCategory) {
+            return true
+        } else {
+            return false
+        }
+    })
+    arrayBrandBySelectCategory = arrayBrandBySelectCategory.map(item => {
+        return item.id
+    })
+
     const years = [];
     for (let year = startYear; year <= currentYear; year++) {
         years.push(year);
@@ -240,6 +243,13 @@ function Dashboard() {
     }
     let totalProduct = 0;
 
+    const handleChangeSelectCategory = (categoryId) => {
+        setSelectCategory(categoryId);
+        setSelectBrand(0)
+    }
+
+    // console.log(arrayBrandBySelectCategory, selectBrand);
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -316,16 +326,17 @@ function Dashboard() {
                 </Grid>
 
                 <MDBox mt={2} style={{}}>
-                    <div style={{ display: "flex", gap: 24 }}>
-                        <span style={{ width: 68 }}>Year: </span>
+                    <div style={{ display: "flex", gap: 12 }}>
+                        <span style={{ textDecoration: "underline" }}>Year: </span>
                         {years.map(year => (
                             <span
                                 key={year}
                                 style={{
+                                    display: "inline-block",
                                     borderRadius: 4,
-                                    padding: "0px 5px",
-                                    border: "1px solid #333",
-                                    backgroundColor: `${selectYear === year ? "#f3d4d4" : ""}`,
+                                    padding: "0px 10px",
+                                    backgroundColor: `${selectYear === year ? "#66BB6A" : ""}`,
+                                    color: `${selectYear === year ? "white" : "black"}`,
                                     cursor: "pointer"
                                 }}
                                 onClick={() => setSelectYear(year)}
@@ -394,6 +405,71 @@ function Dashboard() {
                             <OrdersOverview />
                         </Grid>
                     </Grid> */}
+
+                    <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                        <span style={{ textDecoration: "underline" }}>Category: </span>
+                        <span
+                            style={{
+                                display: "inline-block",
+                                borderRadius: 4,
+                                padding: "0px 10px",
+                                backgroundColor: `${selectCategory === 0 ? "#66BB6A" : ""}`,
+                                color: `${selectCategory === 0 ? "white" : "black"}`,
+                                cursor: "pointer",
+                            }}
+                            onClick={() => handleChangeSelectCategory(0)}
+                        > All </span>
+                        {categories.map((category) => (
+                            <span
+                                key={category}
+                                style={{
+                                    display: "inline-block",
+                                    borderRadius: 4,
+                                    padding: "0px 10px",
+                                    backgroundColor: `${selectCategory === category.id ? "#66BB6A" : ""}`,
+                                    color: `${selectCategory === category.id ? "white" : "black"}`,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => handleChangeSelectCategory(category.id)}
+                            >{category.name}
+                            </span>
+                        ))}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                        <span style={{ textDecoration: "underline" }}>Brand: </span>
+                        <span
+                            style={{
+                                display: `${selectCategory === 0 ? "none" : "inline-block"}`,
+                                borderRadius: 4,
+                                padding: "0px 10px",
+                                backgroundColor: `${selectBrand === 0 ? "#66BB6A" : ""}`,
+                                color: `${selectBrand === 0 ? "white" : "black"}`,
+                                cursor: "pointer",
+                            }}
+                            onClick={() => setSelectBrand(0)}
+                        > All </span>
+                        {brands
+                            .filter((item) => {
+                                return selectCategory === 0 ? true : item.category.id === selectCategory ? true : false
+                            })
+                            .map((brand) => (
+                                <span
+                                    key={brand}
+                                    style={{
+                                        display: "inline-block",
+                                        borderRadius: 4,
+                                        padding: "0px 10px",
+                                        backgroundColor: `${selectBrand === brand.id ? "#66BB6A" : ""}`,
+                                        color: `${selectBrand === brand.id ? "white" : "black"}`,
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() => setSelectBrand(brand.id)}
+                                >{brand.name}
+                                </span>
+                            ))}
+                    </div>
+
                     <Paper sx={{ width: '100%' }}>
                         <Table style={{ width: "100%", borderCollapse: "collapse", }}>
 
@@ -407,27 +483,44 @@ function Dashboard() {
                             </TableRow>
 
                             <TableBody>
-                                {dataProductYears.map((product, i) => {
-                                    const productFind = products.find(item => item.id === product.prouductId)
-                                    let total = 0;
-                                    return (
-                                        <TableRow key={i} style={{ width: 200, }}>
-                                            <TableCell style={{ fontSize: 14 }}>{i + 1}</TableCell>
-                                            <TableCell style={{ width: 200, fontSize: 14 }}>{productFind?.name}</TableCell>
-                                            {Array(12).fill().map((_, i) => {
-                                                const count = getNumberByMonth(product.year, selectYear, i + 1)
-                                                total += count
-                                                totalProduct += count
-                                                return (
-                                                    <TableCell key={i} style={{ width: 200, border: "1px solid #333", fontSize: 14, textAlign: "center" }}>
-                                                        {count}
-                                                    </TableCell>
-                                                )
-                                            })}
-                                            <TableCell style={{ fontSize: 14, textAlign: "center" }}>{total}</TableCell>
-                                        </TableRow>
-                                    )
-                                })}
+                                {dataProductYears
+                                    .filter((item) => {
+                                        const productFind = products.find(product => product.id === item.prouductId)
+                                        if (selectBrand === 0) {
+                                            if (arrayBrandBySelectCategory.includes(productFind.brand.id)) {
+                                                return true
+                                            } else {
+                                                return false
+                                            }
+                                        } else {
+                                            if (productFind.brand.id === selectBrand) {
+                                                return true
+                                            } else {
+                                                return false
+                                            }
+                                        }
+                                    })
+                                    .map((product, i) => {
+                                        const productFind = products.find(item => item.id === product.prouductId)
+                                        let total = 0;
+                                        return (
+                                            <TableRow key={i} style={{ width: 200, }}>
+                                                <TableCell style={{ fontSize: 14 }}>{i + 1}</TableCell>
+                                                <TableCell style={{ width: 200, fontSize: 14 }}>{productFind?.name}</TableCell>
+                                                {Array(12).fill().map((_, i) => {
+                                                    const count = getNumberByMonth(product.year, selectYear, i + 1)
+                                                    total += count
+                                                    totalProduct += count
+                                                    return (
+                                                        <TableCell key={i} style={{ width: 200, border: "1px solid #333", fontSize: 14, textAlign: "center" }}>
+                                                            {count}
+                                                        </TableCell>
+                                                    )
+                                                })}
+                                                <TableCell style={{ fontSize: 14, textAlign: "center" }}>{total}</TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
                             </TableBody>
 
                             <TableFooter>

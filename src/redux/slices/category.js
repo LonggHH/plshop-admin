@@ -9,7 +9,7 @@ export const getCategories = createAsyncThunk('category/getAll', async () => {
 const categorySlice = createSlice({
     name: 'category',
     initialState: {
-        data: null,
+        data: [],
     },
     reducers: {
         saveCategory(state, action) {
